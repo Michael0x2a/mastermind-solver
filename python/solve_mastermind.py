@@ -15,7 +15,7 @@ Feedback = collections.namedtuple('Feedback', ['correct', 'close'])
 
 def generate_initial_pool(choices, holes):
     '''Generates the initial set of possible answers.'''
-    return set(itertools.product(*[range(choices) for _ in xrange(holes)]))
+    return list(itertools.product(*[range(choices) for _ in xrange(holes)]))
 
 
 def find_correct(actual, guess):
@@ -91,7 +91,6 @@ def play():
         if feedback.correct == holes:
             break
         pool = list(filter_pool(pool, guess, feedback))
-
         print "{0} possible choices left. Thinking...\n".format(len(pool))
 
         guess = make_guess(pool, feedback)

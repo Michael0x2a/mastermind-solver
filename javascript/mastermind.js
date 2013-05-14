@@ -70,12 +70,19 @@ function isMatch(guess, feedback, possible) {
 }
 
 function filterPool(pool, guess, feedback) {
-    return _.filter(
+    var output = [];
+    _.each(pool, function(possible, index, list) {
+        if (isMatch(guess, feedback, possible) && (possible !== guess)) {
+            output.push(possible);
+        }
+    });
+    return output;
+    /*return _.filter(
         pool,
         function(possible) {
             return isMatch(guess, feedback, possible) && (possible !== guess);
         }
-    );
+    );*/
 }
 
 function makeGuess(pool, feedback) {
@@ -92,7 +99,9 @@ function makeGuess(pool, feedback) {
     return best_choice;
 }
 
-
+/**
+ * Encapsulation of the algorithm into an object.
+ */
 function Game(choices, holes) {
     this.choices = choices;
     this.holes = holes;
@@ -113,3 +122,13 @@ Game.prototype.addFeedback = function(correct, close) {
 Game.prototype.getNextGuess = function() {
     return this.guess;
 };
+
+
+
+
+
+
+/**
+ * UI
+ */
+function 
