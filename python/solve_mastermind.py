@@ -25,9 +25,9 @@ def find_correct(actual, guess):
 
 def remove_correct(actual, guess):
     '''Removes all correct matches from two "rows"'''
-    actual = [a for (a, b) in zip(actual, guess) if a != b]
-    guess = [b for (a, b) in zip(actual, guess) if a != b]
-    return actual, guess
+    actual2 = [a for (a, b) in zip(actual, guess) if a != b]
+    guess2 = [b for (a, b) in zip(actual, guess) if a != b]
+    return actual2, guess2
 
 
 def find_close(actual, guess):
@@ -84,7 +84,7 @@ def play():
     guess = (0, 0, 1, 1)
     while True:
         print "Try this: {0}".format(guess)
-        correct = int(raw_input("    # Red pegs?  "))
+        correct = int(raw_input("    # Red pegs?   "))
         close = int(raw_input("    # White pegs? "))
 
         feedback = Feedback(correct, close)
