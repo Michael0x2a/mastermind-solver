@@ -1,17 +1,162 @@
+/**
+ * Setup, general settings, and misc. details.
+ *
+ * Font-stacks courtesy of cssfontstack.com
+ */
 *{
     position:relative;
     -webkit-box-sizing:border-box;
        -moz-box-sizing:border-box;
             box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
 body{
     padding:1em;
-    background-color:#eee;
+    background-color:#bed6ee;
+    font-family:Cambria,Georgia,serif;
 }
 
 #wrapper{
-    max-width:50em;
+    /* Width should be some multiple of 
+     * padding + (palette square + palette square margin) * CONSTANT
+     * ...which is:
+     * 2 + 4.5 * CONSTANT
+     */
+    min-width:20em;
+    max-width:47em;
     margin:0 auto;
+    padding:1em;
     background-color:#fff;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-family:"Avant Garde",Avantgarde,"Century Gothic",CenturyGothic,"AppleGothic",sans-serif;
+    font-weight:500;
+    margin:.5em 0 .2em;
+}
+
+p{
+    margin-bottom:.3em;
+}
+
+/**
+ * Forms
+ */
+label{
+    float:left;
+    margin-right:1em;
+    width:12em;
+}
+
+input[type="number"]{
+    margin:0 0 1em;
+    width:5em;
+    height:1.5em;
+}
+
+/**
+ * Color palette
+ */
+#palette:after{
+    content:"";
+    display:table;
+    clear:both;
+}
+
+.color{
+    float:left;
+    width:4em;
+    height:4em;
+    margin:.25em;
+    padding:.2em;
+    background-color:#ffff00;
+}
+
+.color span{
+    display:block;
+    
+    margin:0 auto;
+    
+    font-size:2em;
+    font-family:"Avant Garde",Avantgarde,"Century Gothic",CenturyGothic,"AppleGothic",sans-serif;
+}
+
+
+/**
+ * Guesses and rows
+ */
+ 
+#start{
+    display:none;
+    margin-bottom:1em;
+}
+
+#errors{
+    color:red;
+    margin-bottom:1em;
+}
+
+
+.row:after,#guesses:after{
+    content:"";
+    display:table;
+    clear:both;
+}
+
+#pointer{
+    position:absolute;
+    width:4em;
+    height:4em;
+    margin:.25em;
+    float:left;
+    display:none;
+}
+
+#pointer p{
+    font-size:1em;
+    margin-top:.4em;
+    margin-bottom:0;
+    text-align:left;
+}
+
+#pointer .arrow{
+    font-size:4em;
+    line-height:10%;
+    bottom:.3em;
+}
+
+.guess{
+    margin:0 4.25em;
+}
+
+.feedback{
+    position:absolute;
+    right:0;
+    width:4em;
+    margin:.25em;
+    padding:.2em;
+    background-color:#ccc;
+    min-height:4em;
+}
+
+.feedback span{
+    display:block;
+    float:left;
+    height:1.4em;
+    width:1.4em;
+    margin:.2em;
+}
+
+.red{
+    background-color:red;
+}
+
+.white{
+    background-color:white;
+}
+
+.none{
+    background-color:#888;
 }

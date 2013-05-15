@@ -6,25 +6,63 @@
     <title>Mastermind Solver</title>
     <meta name="author" content="Michael Lee">
     <meta name="description" content="Solves mastermind">
-    <!--<link rel="stylesheet" href="styles.css" type="text/css">-->
+    <link rel="stylesheet" href="styles.css" type="text/css">
 </head>
 <body>
     <div id="wrapper">
         <h1>Mastermind solver</h1>
-        <div id="errors"></div>
+        <noscript class="javascript_disabled">
+            Hello! Unfortunately, you have Javascript disabled. This solver needs Javascript
+            enabled in order to run. Sorry!
+        </noscript>
+        <h2>Options</h2>
         <form id="setup">
             <label for="choices">Number of colors/choices</label>
-            <input id="choices_input" name="choices" value="6" tabindex="1" required="" type="number" \>
+            <input id="choices_input" name="choices" value="6" tabindex="1" required="" type="number" />
             <br />
             
             <label for="holes">Number of holes</label>
             <input id="holes_input" name="holes" value="4" tabindex="2" required="" type="number" />
+            <br />
             
-            <input id="submit" type="button" value="Start solving" />
+            <input id="submit_setup" type="button" value="Start solving" />
         </form>
-        <canvas id="mastermind"></canvas>
-
         
+        <h2>Color Palette</h2>
+        <p>These are the colors that the solver will be using when it recommends guesses.
+        These may not be the same colors that your version of Mastermind uses. Sorry about
+        that.</p>
+        
+        <div id="palette">
+        </div>
+        
+        <h2>Guesses</h2>
+        <div id="start">
+            <p>Ok, try this. How many reds and whites did you get?</p>
+            <form id="user_feedback">        
+                <label for="num_red">Number of red pegs</label>
+                <input id="num_red_input" name="num_red" value="0" tabindex="3" required="" type="number" />
+                <br />
+                
+                <label for="num_white">Number of white pegs</label>
+                <input id="num_white_input" name="num_white_input" value="0" tabindex="4" required="" type="number" />
+                <br />
+                
+                <input id="submit_feedback" type="button" value="Submit feedback" />
+            </form>
+        </div>
+        
+        <div id="errors"></div>
+        
+        
+        <div id="pointer">
+            <p>Try this!</p>
+            <p class="arrow">&rarr;</p>
+        </div>
+        
+        <div id="guesses">
+        </div>
+    
     </div>
     
     <script src="jquery-1.9.1.min.js" type="text/javascript"></script>
@@ -34,8 +72,9 @@
     <script type="text/javascript">
         $(document).ready(function() {
             'use strict';
-            var game = new Game(6, 4);
-            
+            setupMastermind('#submit_setup', '#choices_input', '#holes_input', '#palette', 
+                            '#start', '#submit_feedback', '#guesses', '#pointer', 
+                            '#num_red_input', '#num_white_input', '#errors');
         });
     </script>
 </body>

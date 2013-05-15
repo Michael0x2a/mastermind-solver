@@ -81,7 +81,7 @@ def play():
     print ''
 
     pool = generate_initial_pool(choices, holes)
-    guess = (0, 0, 1, 1)
+    guess = [0 if (i < (holes / 2)) else 1 for i in range(holes)]
     while True:
         print "Try this: {0}".format(guess)
         correct = int(raw_input("    # Red pegs?   "))
