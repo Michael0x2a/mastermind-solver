@@ -62,7 +62,7 @@ function findClose(actual, guess) {
     var close = 0;
     _.each(guess, function (possible, index, list) {
         if (_.contains(actual, possible)) {
-            actual.splice(actual.indexOf(possible), 1);
+            actual.splice(_.indexOf(actual, possible), 1);
             close += 1;
         }
     });
@@ -122,7 +122,8 @@ function makeGuess(pool, feedback, callback) {
             ++index;
         }
         if (index < pool.length) {
-            setTimeout(doChunk, 0.3);
+            $('#errors').html('<p>Thinking... (' + index + ' out of ' + pool.length + ')</p>');
+            setTimeout(doChunk, 0.1);
         }
         if (index === pool.length) {
             this.guess = best_choice;
@@ -131,6 +132,8 @@ function makeGuess(pool, feedback, callback) {
     }
     
     doChunk();
+    
+    return best_choice;
     
     /*_.each(pool, function(possible, index, list) {
         var length = filterPool(pool, possible, feedback).length;
@@ -163,8 +166,11 @@ Game.prototype.isGameWon = function(correct) {
 Game.prototype.addFeedback = function(correct, close, callback) {
     var feedback = {"correct": correct, "close": close};
     this.pool = filterPool(this.pool, this.guess, feedback);
+    alert(this.pool.join(' | '));
     this.guess_number += 1;
-    makeGuess(this.pool, feedback, callback);
+    this.guess = makeGuess(this.pool, feedback, callback);
+    alert(this.guess);
+    return this.guess;
 };
 
 
@@ -181,12 +187,14 @@ var colorTable = colorTable || [];
 /**
  * DISPLAY
  */
+ 
 function pushPaletteColor(id, color, number) {
     var style = 'style="background-color:' + color + '" ';
     var number_str = (number + 1).toString(10);
     var color_id = 'id="color_' + number.toString() + '" ';
     var html = '<div class="color" ' + color_id + style + '><span>' + number_str + '</span></div>';
-    $(id).append(html);
+    //$(id).append(html);
+    $(html).appendTo(id).slideDown();
 }
 
 /**

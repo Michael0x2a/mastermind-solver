@@ -4,7 +4,6 @@
  * Font-stacks courtesy of cssfontstack.com
  */
 *{
-    position:relative;
     -webkit-box-sizing:border-box;
        -moz-box-sizing:border-box;
             box-sizing:border-box;
@@ -31,6 +30,14 @@ body{
     background-color:#fff;
 }
 
+.critical_error{
+    display:block;
+    padding:1em;
+    margin-bottom:3em;
+    border:.5em solid red;
+    color:red;
+}
+
 h1,h2,h3,h4,h5,h6{
     font-family:"Avant Garde",Avantgarde,"Century Gothic",CenturyGothic,"AppleGothic",sans-serif;
     font-weight:500;
@@ -38,7 +45,20 @@ h1,h2,h3,h4,h5,h6{
 }
 
 p{
-    margin-bottom:.3em;
+    margin-bottom:.5em;
+}
+
+ol{
+    list-style-position:inside;
+    margin-bottom:.5em;
+}
+
+li{
+    margin-bottom:.5em;
+}
+
+input[type="button"]{
+    padding:.2em;
 }
 
 /**
@@ -115,6 +135,7 @@ input[type="number"]{
 }
 
 #pointer p{
+    position:relative;
     font-size:1em;
     margin-top:.4em;
     margin-bottom:0;
@@ -122,9 +143,14 @@ input[type="number"]{
 }
 
 #pointer .arrow{
+    pointer:relative;
     font-size:4em;
     line-height:10%;
     bottom:.3em;
+}
+
+#guesses{
+    position:relative;
 }
 
 .guess{

@@ -7,53 +7,84 @@
     <meta name="author" content="Michael Lee">
     <meta name="description" content="Solves mastermind">
     <link rel="stylesheet" href="styles.css" type="text/css">
+    <!--[if lt IE 8]>
+    <style type="text/css">
+        .row:before,#guesses:before,#palette:before,
+        .row:after,#guesses:after,#palette:after{
+            content: "";
+            display: table;
+        } 
+        .row:after,#guesses:after,#palette:after{
+            clear: both;
+        }
+        .row,#guesses,#palette{
+            zoom: 1; /* For IE 6/7 (trigger hasLayout) */
+        }
+        .feedback span{
+            display:block;
+            float:left;
+            height:1.55em;
+            width:1.55em;
+            margin:.2em;
+        }
+    </style>
+    <![endif]-->
 </head>
 <body>
     <div id="wrapper">
-        <h1>Mastermind solver</h1>
-        <noscript class="javascript_disabled">
+        <!--[if lt IE 8]>
+        <div class="critical_error">
+            <p>Warning! You're using an old, outdated browser. This page may appear broken 
+            or not work.</p>
+            <p><a href="http://theie7countdown.com/">Upgrade your browser</a></p>
+        </div>
+        <![endif]-->
+        
+        <noscript class="critical_error">
             Hello! Unfortunately, you have Javascript disabled. This solver needs Javascript
             enabled in order to run. Sorry!
         </noscript>
+        
+        <h1>Mastermind solver</h1>
         <h2>Options</h2>
         <form id="setup">
             <label for="choices">Number of colors/choices</label>
             <input id="choices_input" name="choices" value="6" tabindex="1" required="" type="number" />
             <br />
             
-            <label for="holes">Number of holes</label>
+            <label for="holes">Length of secret code</label>
             <input id="holes_input" name="holes" value="4" tabindex="2" required="" type="number" />
             <br />
             
-            <input id="submit_setup" type="button" value="Start solving" />
+            <input id="submit_setup" type="button" value="Start solving / Reset" tabindex="3"/>
         </form>
         
-        <h2>Color Palette</h2>
-        <p>These are the colors that the solver will be using when it recommends guesses.
-        These may not be the same colors that your version of Mastermind uses. Sorry about
-        that.</p>
-        
-        <div id="palette">
-        </div>
-        
-        <h2>Guesses</h2>
         <div id="start">
-            <p>Ok, try this. How many reds and whites did you get?</p>
+            
+            <h2>Color Palette</h2>
+            <p>These are the colors that the solver will be using when it recommends guesses.
+            These may not be the same colors that your version of Mastermind uses. Sorry about
+            that.</p>
+            
+            <div id="palette">
+            </div>
+            
+            <h2>Guesses</h2>        
+            <p>Ok, try the below color combination. How many reds and whites did you get?</p>
             <form id="user_feedback">        
                 <label for="num_red">Number of red pegs</label>
-                <input id="num_red_input" name="num_red" value="0" tabindex="3" required="" type="number" />
+                <input id="num_red_input" name="num_red" value="0" tabindex="4" required="" type="number" />
                 <br />
                 
                 <label for="num_white">Number of white pegs</label>
-                <input id="num_white_input" name="num_white_input" value="0" tabindex="4" required="" type="number" />
+                <input id="num_white_input" name="num_white_input" value="0" tabindex="5" required="" type="number" />
                 <br />
                 
-                <input id="submit_feedback" type="button" value="Submit feedback" />
+                <input id="submit_feedback" type="button" value="Submit feedback" tabindex="6" />
             </form>
         </div>
         
         <div id="errors"></div>
-        
         
         <div id="pointer">
             <p>Try this!</p>
@@ -62,7 +93,34 @@
         
         <div id="guesses">
         </div>
-    
+        
+        
+        <h2>Instructions</h2>
+        <ol>
+            <li>Set the parameters and click "Start solving" to begin.</li>
+            <li>Try the guess provided. Enter the number of red pegs (correct numbers in 
+                the correct position) and white pegs (correct numbers in the wrong position) and 
+                hit "Submit feedback".</li>
+            <li>Follow the next guess and repeat. Note: the most recent guess is always
+                at the top.</li>
+            <li>To restart, click "Start solving". This will automatically reset everything.</li>
+            <li>Warning: Entering large initial parameters will make the solver take exponentially
+                longer.</li>
+        </ol>
+        
+        <h2>About</h2>
+        <p>This is a <a href="http://en.wikipedia.org/wiki/Mastermind_%28board_game%29">Mastermind</a> solver.
+        Given 6 colors and 4 holes, this site uses can reliably guess the correct combo 
+        within 5 guesses.</p>
+        
+        <p>This entire site is written in HTML and Javascript. You can download the HTML and 
+        Javascript and run the solver locally on your computer without needing a server.</p>
+        
+        <p>You can view the source on Github (including a basic version written in Python): <br />
+        <a href="http://github.com/michael0x2a/mastermind-solver">http://github.com/michael0x2a/mastermind-solver</a>
+        </p>
+        
+        <p>By <a href="http://michael0x2a.com">Michael Lee</a>.</p>
     </div>
     
     <script src="jquery-1.9.1.min.js" type="text/javascript"></script>
