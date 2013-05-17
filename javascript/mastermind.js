@@ -1,200 +1,19 @@
 /**
- * Courtesy of http://stackoverflow.com/a/12628791/646543
+ * ui.js
  */
-function cartesianProduct(lists) {
-    return _.reduce(lists, function(a, b) {
-        return _.flatten(_.map(a, function(x) {
-            return _.map(b, function(y) {
-                return x.concat([y]);
-            });
-        }), true);
-    }, [ [] ]);
-}
 
-function generateInitialPool(choices, holes) {
-    var numbers = [];
-    _.each(_.range(holes), function(element, index, list) {
-        numbers.push(_.range(choices));
-    });
-    return cartesianProduct(numbers);
-}
-
-function generateInitialGuess(holes) {
-    var guess = [];
-    var mean = holes / 2;
-    for (var i = 0; i < holes; i++) {
-        if (i < mean) {
-            guess.push(0);
-        } else {
-            guess.push(1);
-        }
-    }
-    return guess;
-}
-
-function findCorrect(actual, guess) {
-    var output = 0;
-    _.each(_.zip(actual, guess), function (element, index, list) {
-        if (element[0] === element[1]) {
-            output += 1;
-        }
-    });
-    return output;
-}
-
-function removeCorrect(actual, guess) {
-    var new_actual = [];
-    var new_guess = [];
-    _.each(_.zip(actual, guess), function(element, index, list) {
-        if (element[0] !== element[1]) {
-            new_actual.push(element[0]);
-            new_guess.push(element[1]);
-        }
-    });
-    return [new_actual, new_guess];
-}
-
-function findClose(actual, guess) {
-    var temp = removeCorrect(actual, guess);
-    actual = temp[0];
-    guess = temp[1];
-
-    var close = 0;
-    _.each(guess, function (possible, index, list) {
-        if (_.contains(actual, possible)) {
-            actual.splice(_.indexOf(actual, possible), 1);
-            close += 1;
-        }
-    });
-
-    return close;
-}
-
-function getFeedback(actual, guess) {
-    return {
-        "correct": findCorrect(actual, guess),
-        "close": findClose(actual, guess)
-    };
-}
-
-function isMatch(guess, feedback, possible) {
-    var feedback2 = getFeedback(possible, guess);
-    return (feedback.correct === feedback2.correct) && (feedback.close === feedback2.close);
-}
-
-/**
- * I've broken this operation up into chunks, since they take up
- * a lot of time, freezing the OI. See http://stackoverflow.com/a/10344560/646543
- */
-function filterPool(pool, guess, feedback, callback) {
-    var output = [];
-    
-    _.each(pool, function(possible, index, list) {
-        if (isMatch(guess, feedback, possible) && (possible !== guess)) {
-            output.push(possible);
-        }
-    });
-    return output;
-    /*return _.filter(
-        pool,
-        function(possible) {
-            return isMatch(guess, feedback, possible) && (possible !== guess);
-        }
-    );*/
-}
-
-function makeGuess(pool, feedback, callback) {
-    var min_length = Number.POSITIVE_INFINITY;
-    var best_choice = null;
-    
-    var chunk = 20;
-    var index = 0;
-    
-    function doChunk() {
-        var count = chunk;
-        while (count-- && index < pool.length) {
-            var possible = pool[index];
-            var length = filterPool(pool, possible, feedback).length;
-            if (min_length > length) {
-                min_length = length;
-                best_choice = possible;
-            }
-            ++index;
-        }
-        if (index < pool.length) {
-            $('#errors').html('<p>Thinking... (' + index + ' out of ' + pool.length + ')</p>');
-            setTimeout(doChunk, 0.1);
-        }
-        if (index === pool.length) {
-            this.guess = best_choice;
-            callback(best_choice);
-        }
-    }
-    
-    doChunk();
-    
-    return best_choice;
-    
-    /*_.each(pool, function(possible, index, list) {
-        var length = filterPool(pool, possible, feedback).length;
-        if (min_length > length) {
-            min_length = length;
-            best_choice = possible;
-        }
-    });
-    
-    
-    return best_choice;
-    */
-}
-
-/**
- * Encapsulation of the algorithm into an object.
- */
-function Game(choices, holes) {
-    this.choices = choices;
-    this.holes = holes;
-    this.pool = generateInitialPool(this.choices, this.holes);
-    this.guess = generateInitialGuess(this.holes);
-    this.guess_number = 1;
-}
-
-Game.prototype.isGameWon = function(correct) {
-    return correct === this.holes;
-};
-
-Game.prototype.addFeedback = function(correct, close, callback) {
-    var feedback = {"correct": correct, "close": close};
-    this.pool = filterPool(this.pool, this.guess, feedback);
-    alert(this.pool.join(' | '));
-    this.guess_number += 1;
-    this.guess = makeGuess(this.pool, feedback, callback);
-    alert(this.guess);
-    return this.guess;
-};
-
-
-
-
-
-
-/**
- * UI
- */
  
-var colorTable = colorTable || [];
+var colorTable = colorTable || []; 
+var output = output || {};
+var worker = worker || {};
+var workerEvents = workerEvents || {};
  
 /**
- * DISPLAY
+ * Courtesy of http://stackoverflow.com/a/5624139/646543
  */
- 
-function pushPaletteColor(id, color, number) {
-    var style = 'style="background-color:' + color + '" ';
-    var number_str = (number + 1).toString(10);
-    var color_id = 'id="color_' + number.toString() + '" ';
-    var html = '<div class="color" ' + color_id + style + '><span>' + number_str + '</span></div>';
-    //$(id).append(html);
-    $(html).appendTo(id).slideDown();
+function toHex(c) {
+    var hex = c.toString(16);
+    return hex.length === 1 ? "0" + hex : hex;
 }
 
 /**
@@ -209,52 +28,12 @@ function repeat(string, num) {
     return output.join('');
 }
 
-function pushGuess(guesses_id, guess_number, guess, red, white, wrong) {
-    if ((guess_number - 1) >= 1) {
-        var feedback = ['<div class="feedback">'];
-        feedback.push(repeat('<span class="red"></span>', red));
-        feedback.push(repeat('<span class="white"></span>', white));
-        feedback.push(repeat('<span class="none"></span>', wrong));
-        feedback.push('</div>');
-        
-        var prev_id = '#guess_' + parseInt(guess_number - 1, 10);
-        $(feedback.join('')).appendTo(prev_id).slideDown();
-    }
-    
-    var current_id = 'guess_' + parseInt(guess_number, 10);
-    var html = '<div id="' + current_id + '" class="row"></div>'
-    $(guesses_id).prepend(html);
-    
-    var colors = ['<div class="guess">'];
-    _.each(guess, function(color, index, list) {
-        var style = 'style="background-color:' + colorTable[color] + '" ';
-        var color_class = 'color_' + color;
-        var span = '<span>' + (color + 1) + '</span>';
-        colors.push('<div class="color ' + color_class + '" ' + style + '>' + span + '</div>');
-    });
-    colors.push('</div>');
-    
-    $(colors.join('')).prependTo('#' + current_id).hide().slideDown();
-    
-    $('#guess_' + guess_number).slideDown();
-}
- 
- 
-/**
- * Courtesy of http://stackoverflow.com/a/5624139/646543
- */
-function toHex(c) {
-    var hex = c.toString(16);
-    return hex.length === 1 ? "0" + hex : hex;
-}
- 
+
 /**
  * Courtesy of http://snipplr.com/view/14590
  */
 function hsvToHex(h, s, v) {
-    var r, g, b;
-    var i;
-    var f, p, q, t;
+    var r, g, b, i, f, p, q, t;
 
     // Make sure our arguments stay in-range
     h = Math.max(0, Math.min(1, h));
@@ -313,7 +92,6 @@ function hsvToHex(h, s, v) {
     b = toHex(Math.round(b * 255));
      
     return '#' + r + g + b;
-
 }
  
 /**
@@ -324,6 +102,7 @@ function hsvToHex(h, s, v) {
 function generateColors(amount) {
     var PHI = 0.618033988749895;
     var i = 0;
+    colorTable = [];
     for (i; i < amount; ++i) {
         if (_.isString(colorTable[i])) {
             continue;
@@ -337,87 +116,244 @@ function generateColors(amount) {
     
 }
 
-function populateColors(id) {
-    $(id).empty();
+
+
+
+ 
+/**
+ * DISPLAY
+ */
+ 
+function pushPaletteColor(color, number) {
+    var style = 'style="background-color:' + color + '" ';
+    var number_str = (number + 1).toString(10);
+    var color_id = 'id="color_' + number.toString() + '" ';
+    var html = '<div class="color" ' + color_id + style + '><span>' + number_str + '</span></div>';
+    $(output.palette_id).append(html);
+}
+
+function pushColors() {
+    $(output.palette_id).empty();
     _.each(colorTable, function(color, index, list) {
-        pushPaletteColor(id, color, index);
+        pushPaletteColor(color, index);
     });
 }
 
+function pushGuess(guess_number, guess) {
+    var current_id = 'guess_' + parseInt(guess_number, 10);
+    var html = '<div id="' + current_id + '" class="row"></div>'
+    $(output.guesses_id).prepend(html);
+    
+    var colors = ['<div class="guess">'];
+    _.each(guess, function(color, index, list) {
+        var style = 'style="background-color:' + colorTable[color] + '" ';
+        var color_class = 'color_' + color;
+        var span = '<span>' + (color + 1) + '</span>';
+        colors.push('<div class="color ' + color_class + '" ' + style + '>' + span + '</div>');
+    });
+    colors.push('</div>');
+    
+    $(colors.join('')).prependTo('#' + current_id).hide().slideDown();
+    
+    $('#guess_' + guess_number).slideDown();
+}
 
-var globalGame = {};
+function clearGuesses() {
+    $(output.guesses_id).empty();
+}
+
+function pushFeedback(guess_number, red, white, wrong) {
+    if ((guess_number - 1) >= 1) {
+        var feedback = ['<div class="feedback">'];
+        feedback.push(repeat('<span class="red"></span>', red));
+        feedback.push(repeat('<span class="white"></span>', white));
+        feedback.push(repeat('<span class="none"></span>', wrong));
+        feedback.push('</div>');
+        
+        var prev_id = '#guess_' + parseInt(guess_number - 1, 10);
+        $(feedback.join('')).appendTo(prev_id).slideDown();
+    }
+}
+
+function pushError(message) {
+    $('<p>' + message + '</p>').prependTo(output.error_id).slideDown();
+}
+
+function clearErrors() {
+    $(output.error_id).empty();
+}
+
+
 
 /**
  * TRIGGERS AND BINDING LOGIC
  */
+
+ 
+/**
+ * Convenience functions
+ */
+ 
+function initWorker() {
+    worker = new Worker('algorithm.js');
+    
+    worker.addEventListener('message', function(message) {
+        message = message.data;
+        
+        var callback = workerEvents[message.name];
+        if (!_.isFunction(callback)) {
+            pushError('Error: ' + JSON.stringify(message) + ' is not a function');
+            return;
+        }
+        
+        callback(message.name, message);
+    });
+}
+
+function onMessage(name, callback) {
+    workerEvents[name] = callback;
+}
+
+function sendMessage(name, message) {
+    message.name = name;
+    worker.postMessage(message);
+}
  
 function getVal(id) {
     return parseInt($.trim($(id).val()), 10);
 }
- 
-function bind_submit_function(form_id, choices_id, holes_id, palette_id, start_id, 
-                              guesses_id, pointer_id, error_id) {
-    $(form_id).click(function() {
-        var choices = getVal(choices_id);
-        var holes = getVal(holes_id);
+
+/**
+ * Public API
+ *
+ * ProcessFeedback
+ * SetupGame
+ */
+
+
+function bindSubmitFunction() {
+    $(output.form_id).click(function() {
+        var choices = getVal(output.choices_id);
+        var holes = getVal(output.holes_id);
+        
+        var errors = 0;
+        if (choices <= 1) {
+            pushError('ERROR: You must have 2 or more color choices.');
+            errors += 1;
+        }
+        if (holes === 0) {
+            pushError('ERROR: The length of the secret code can\'t be zero.');
+            errors += 1;
+        }
+        if (errors !== 0) {
+            return;
+        }
+        
+        $(output.start_id).slideDown();
         
         generateColors(choices);
-        populateColors(palette_id);
+        pushColors();
         
-        $(pointer_id).show();
-        $(error_id).empty();
-        $(guesses_id).empty();
+        clearErrors();
+        clearGuesses();
         
-        globalGame = new Game(choices, holes);
-        
-        pushGuess(
-            guesses_id, 
-            globalGame.guess_number, 
-            globalGame.guess,
-            0, 0, 0);
-        
-        $(start_id).slideDown();
+        sendMessage('SetupGame', {
+            'choices': choices, 
+            'holes': holes});
     });
 }
 
-function bind_feedback_function(feedback_id, guesses_id, red_id, white_id, error_id) {
-    $(feedback_id).click(function() {
+function bindFeedbackFunction() {
+    $(output.feedback_id).click(function() {
         
-        var red = getVal(red_id);
-        var white = getVal(white_id);
+        var red = getVal(output.red_id);
+        var white = getVal(output.white_id);
         
-        if (globalGame.pool.length === 0) {
-            $(error_id).text('No more possibilities left. Did you enter the number of red and white pegs correctly?');
-            return;
-        }
+        clearErrors();
+        pushError('Thinking...');
         
-        if (globalGame.isGameWon(red)) {
-            $(error_id).text("Congrats! You've won!.");
-            return;
-        }
-        
-        $('<p>Thinking...</p>').appendTo(error_id).slideDown();
-        
-        
-        var guess = globalGame.addFeedback(red, white, function(guess) {   
-            pushGuess(
-                guesses_id, 
-                globalGame.guess_number, 
-                guess,
-                red, 
-                white, 
-                globalGame.holes - red - white);
-            
-            $(error_id).empty();
-            $('#wait').hide();
-        });
+        sendMessage('ProcessFeedback', {
+            correct: red, 
+            close: white});
+    });
+}
+
+function bindWorkerEvents() {
+    onMessage('GetFirstMove', function(name, message) {
+        $(output.pointer_id).show();
+
+        pushGuess(
+            message.guess_number, 
+            message.guess);
+    });
+
+    onMessage('GetNextMove', function(name, message) {
+        pushGuess(
+            message.guess_number, 
+            message.guess);
+        clearErrors();
+    });
+    
+    onMessage('UpdateFeedback', function(name, message) {
+        pushFeedback(
+            message.guess_number, 
+            message.correct, 
+            message.close, 
+            message.wrong);
+    });
+     
+    onMessage('UpdateCounter', function(name, message) {
+        clearErrors();
+        pushError('Thinking (' + message.current + '/' + message.total + ')');
+    });
+
+    onMessage('OnError', function(name, message) {
+        clearErrors();
+        pushError('ERROR: ' + message.reason);
+    });
+
+    onMessage('OnBadInput', function(name, message) {
+        clearErrors();
+        pushError('ERROR: ' + message.reason);
+    });
+
+    onMessage('OnPoolExhausted', function(name, message) {
+        clearErrors();
+        pushError('ERROR: Sorry, there are no more possible combos left. Either you\'ve made a mistake, or there\'s a bug (report to <a href="mailto:michael.lee.0x2a.com">michael.lee.0x2a.com</a>');
+    });
+
+    onMessage('OnVictory', function(name, message) {
+        clearErrors();
+        pushError("Well, that was the last possible combo left! If you haven't won already, this should be the winning move.");
+    });
+    
+    onMessage('OnAssuredVictory', function(name, message) {
+        clearErrors();
+        pushError("You win!");
     });
 }
 
 function setupMastermind(form_id, choices_id, holes_id, palette_id, start_id,
                          feedback_id, guesses_id, pointer_id, red_id, white_id, error_id) {
-    bind_submit_function(form_id, choices_id, holes_id, palette_id, start_id, 
-                         guesses_id, pointer_id, error_id);
-    bind_feedback_function(feedback_id, guesses_id, red_id, white_id, error_id);
+    output = {
+        form_id: form_id, 
+        choices_id: choices_id,
+        holes_id: holes_id,
+        palette_id: palette_id,
+        start_id: start_id,
+        feedback_id: feedback_id,
+        guesses_id: guesses_id,
+        pointer_id: pointer_id,
+        red_id: red_id,
+        white_id: white_id,
+        error_id: error_id
+    }
+    
+    initWorker();
+    bindWorkerEvents();
+    
+    bindSubmitFunction();
+    bindFeedbackFunction();
 }
+
 

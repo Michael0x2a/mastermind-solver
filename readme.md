@@ -8,6 +8,8 @@ available. You then tell the program the number of red and white pegs you reciev
 it'll give you a combination to guess.
 
 Just for kicks, I'm writing a version of the algorithm in several different programming 
-languages. I currently have a version in python available, and am planning on implementing
-a version in HTML/Javascript.
+languages. Versions available:
+
+*   Python, basic console app: Complete (reference implementation)
+*   HTML5 + Javascript, webapp: Complete (but needs validation on other web browsers)
 

@@ -118,6 +118,9 @@ input[type="number"]{
     margin-bottom:1em;
 }
 
+.row{
+    margin-bottom:1em;
+}
 
 .row:after,#guesses:after{
     content:"";
