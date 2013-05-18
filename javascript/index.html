@@ -32,17 +32,43 @@
 </head>
 <body>
     <div id="wrapper">
-        <!--[if lt IE 8]>
+        <!--[if lt IE 7]>
         <div class="critical_error">
-            <p>Warning! You're using an old, outdated browser. This page may appear broken 
-            or not work.</p>
-            <p><a href="http://theie7countdown.com/">Upgrade your browser</a></p>
+            <p>Warning! You're using an extremely old, outdated browser. This page may appear broken 
+            or will not work.</p>
+            <p>Consider <a href="http://browserupgrade.info/how-to-upgrade/">upgrading your browser</a>!</p>
+            <p>This webapp has been tested to work on the following browsers:</p>
+            <ul>
+                <li><a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a></li>
+                <li><a href="http://www.google.com/chrome/">Google Chrome</a></li>
+                <li><a href="http://www.opera.com">Opera</a></li>
+                <li><a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">Internet Explorer (version 10 or higher)</a></li>
+            </ul>
         </div>
         <![endif]-->
         
-        <noscript class="critical_error">
-            Hello! Unfortunately, you have Javascript disabled. This solver needs Javascript
-            enabled in order to run. Sorry!
+        <div id="no_web_workers" class="critical_error">
+            <p>Hello! Unfortunately, your browser does not support 
+            <a href="http://www.html5rocks.com/en/tutorials/workers/basics/">web workers</a>, 
+            a feature this webapp uses to prevent any intensive calculations from temporarily 
+            freezing your computer. Although this webapp will continue to work, it will be 
+            slower and may freeze your web browser while it's thinking.</p>
+            <p>Consider <a href="http://browserupgrade.info/how-to-upgrade/">upgrading your 
+            browser</a>!</p>
+            <p>This webapp has been tested to work on the following browsers:</p>
+            <ul>
+                <li><a href="http://www.mozilla.org/en-US/firefox/new/">Firefox</a></li>
+                <li><a href="http://www.google.com/chrome/">Google Chrome</a></li>
+                <li><a href="http://www.opera.com">Opera</a></li>
+                <li><a href="http://windows.microsoft.com/en-us/internet-explorer/download-ie">Internet Explorer (version 10 or higher)</a></li>
+            </ul>
+        </div>
+        
+        <noscript>
+            <div class="critical_error">
+                <p>Hello! Unfortunately, you have Javascript disabled. This solver needs Javascript
+                enabled in order to run. Sorry!</p>
+            </div>
         </noscript>
         
         <h1>Mastermind solver</h1>
@@ -120,14 +146,16 @@
         <a href="http://github.com/michael0x2a/mastermind-solver">http://github.com/michael0x2a/mastermind-solver</a>
         </p>
         
-        <p>By <a href="http://michael0x2a.com">Michael Lee</a>.</p>
+        <p>By <a href="http://michael0x2a.com">Michael Lee</a>. First released May 16, 2013.
+        Last updated May 17, 2013.</p>
     </div>
     
     <script src="jquery-1.9.1.min.js" type="text/javascript"></script>
     <script src="underscore-min.js" type="text/javascript"></script>
-    <script src="worker.js"></script>
     
+    <script src="algorithm.js" type="text/javascript"></script>
     <script src="mastermind.js" type="text/javascript"></script>
+    
     <script type="text/javascript">
         $(document).ready(function() {
             'use strict';

@@ -30,6 +30,10 @@ body{
     background-color:#fff;
 }
 
+#no_web_workers{
+    display:none;
+}
+
 .critical_error{
     display:block;
     padding:1em;
@@ -48,7 +52,7 @@ p{
     margin-bottom:.5em;
 }
 
-ol{
+ol,ul{
     list-style-position:inside;
     margin-bottom:.5em;
 }

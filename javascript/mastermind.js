@@ -193,21 +193,17 @@ function clearErrors() {
 /**
  * Convenience functions
  */
- 
-function initWorker() {
-    worker = new Worker('algorithm.js');
+
+function handleMessage(message) {
+    message = message.data;
     
-    worker.addEventListener('message', function(message) {
-        message = message.data;
-        
-        var callback = workerEvents[message.name];
-        if (!_.isFunction(callback)) {
-            pushError('Error: ' + JSON.stringify(message) + ' is not a function');
-            return;
-        }
-        
-        callback(message.name, message);
-    });
+    var callback = workerEvents[message.name];
+    if (!_.isFunction(callback)) {
+        pushError('Error: ' + JSON.stringify(message) + ' is not a function');
+        return;
+    }
+    
+    callback(message.name, message);
 }
 
 function onMessage(name, callback) {
@@ -216,12 +212,34 @@ function onMessage(name, callback) {
 
 function sendMessage(name, message) {
     message.name = name;
-    worker.postMessage(message);
+    if (!window.Worker) {
+        var temp = message;
+        message = {data: temp};
+        handleMessage(message);
+    } else {
+        worker.postMessage(message);
+    }
+}
+
+function getVal(id) {
+    var num = $.trim($(id).val());
+    if (num === '') {
+        return 0;
+    } else {
+        return parseInt(num, 10);
+    }
 }
  
-function getVal(id) {
-    return parseInt($.trim($(id).val()), 10);
+function initWorker() {
+    if (!window.Worker) {
+        bindAlgorithmCalls(onMessage, sendMessage);
+        $('#no_web_workers').slideDown();
+    } else {
+        worker = new Worker('expensive.js');    
+        worker.addEventListener('message', handleMessage);
+    }
 }
+
 
 /**
  * Public API
@@ -319,7 +337,7 @@ function bindWorkerEvents() {
 
     onMessage('OnPoolExhausted', function(name, message) {
         clearErrors();
-        pushError('ERROR: Sorry, there are no more possible combos left. Either you\'ve made a mistake, or there\'s a bug (report to <a href="mailto:michael.lee.0x2a.com">michael.lee.0x2a.com</a>');
+        pushError('ERROR: Sorry, there are no more possible combos left. Either you\'ve made a mistake, or there\'s a bug (report to <a href="mailto:michael.lee.0x2a.com">michael.lee.0x2a.com</a>)');
     });
 
     onMessage('OnVictory', function(name, message) {

@@ -1,17 +1,10 @@
 /**
- * algorithms.js
- * 
- * This file is meant to be run as a thread/webworker.
+ * algorithm.js
+ *
+ * This file can either be imported in by a web worker, or be run directly from
+ * the main thread (although it has a tendency to block IO)
  */
 
-//
-// Internals
-//
-
-importScripts('underscore-min.js');
-
-var currentGame = currentGame || {};
-var workerEvents = workerEvents || {};
 
 /**
  * Courtesy of http://stackoverflow.com/a/12628791/646543
@@ -158,101 +151,63 @@ Game.prototype.addFeedback = function(correct, close, callback) {
 };
 
 
-/**
- * Convenience functions
- */
- 
-self.addEventListener('message', function(message) {
-    message = message.data;
-    var callback = workerEvents[message.name];
-    if (!_.isFunction(callback)) {
-        sendMessage('OnError', {reason: message.name});
-        return;
-    }
-    callback(message.name, message);
-}); 
-    
-function onMessage(name, callback) {
-    workerEvents[name] = callback;
-}
-
-function sendMessage(name, message) {
-    message.name = name;
-    self.postMessage(message);
-}
 
 
 /**
- * Public API
+ * Technically, I don't think I need to specify these two as 
+ * callbacks, since once this is imported it'll automatically bind,
+ * but might as well make it explicit and directly pass them in.
  */
- 
-onMessage('SetupGame', function(name, message) {
-    currentGame = new Game(message.choices, message.holes);
-    
-    sendMessage('GetFirstMove', {
-        guess: currentGame.guess,
-        guess_number: currentGame.guess_number
+function bindAlgorithmCalls(onMessage, sendMessage) {
+    onMessage('SetupGame', function(name, message) {
+        currentGame = new Game(message.choices, message.holes);
+        
+        sendMessage('GetFirstMove', {
+            guess: currentGame.guess,
+            guess_number: currentGame.guess_number
+        });
     });
-});
 
-onMessage('ProcessFeedback', function(name, message) {
-    if (currentGame.pool.length === 0) {
-        sendMessage('OnPoolExhausted', {});
-        return;
-    } else if (message.correct === currentGame.holes) {
-        sendMessage('OnAssuredVictory', {});
-        return;
-    }
-    
-    sendMessage('UpdateFeedback', {
-        guess_number: currentGame.guess_number + 1,
-        correct: message.correct,
-        close: message.close,
-        wrong: currentGame.holes - message.correct - message.close});
-
-    currentGame.addFeedback(
-        message.correct, 
-        message.close,
-        function(index, pool_length) {
-            if (index % 2 == 0) {
-                sendMessage('UpdateCounter', {
-                    current: index,
-                    total: pool_length
-                });
-            }
+    onMessage('ProcessFeedback', function(name, message) {
+        if (currentGame.pool.length === 0) {
+            sendMessage('OnPoolExhausted', {});
+            return;
+        } else if (message.correct === currentGame.holes) {
+            sendMessage('OnAssuredVictory', {});
+            return;
         }
-    );
-    
-    if (currentGame.pool.length === 0) {
-        sendMessage('OnPoolExhausted', {});
-        return;
-    } else if (currentGame.pool.length === 1) {
-        sendMessage('OnVictory', {});
-    }
-    
-    sendMessage('GetNextMove', {
-        guess: currentGame.guess,
-        guess_number: currentGame.guess_number,
-        pool_length: currentGame.pool.length,
-        holes: currentGame.holes
+        
+        sendMessage('UpdateFeedback', {
+            guess_number: currentGame.guess_number + 1,
+            correct: message.correct,
+            close: message.close,
+            wrong: currentGame.holes - message.correct - message.close});
+
+        currentGame.addFeedback(
+            message.correct, 
+            message.close,
+            function(index, pool_length) {
+                if (index % 2 == 0) {
+                    sendMessage('UpdateCounter', {
+                        current: index,
+                        total: pool_length
+                    });
+                }
+            }
+        );
+        
+        if (currentGame.pool.length === 0) {
+            sendMessage('OnPoolExhausted', {});
+            return;
+        } else if (currentGame.pool.length === 1) {
+            sendMessage('OnVictory', {});
+        }
+        
+        sendMessage('GetNextMove', {
+            guess: currentGame.guess,
+            guess_number: currentGame.guess_number,
+            pool_length: currentGame.pool.length,
+            holes: currentGame.holes
+        });
     });
-});
-
-
-/**
- * Events to receive:
- * SetupGame
- * ProcessFeedback
- * 
- * Events which will be sent.
- *
- * GetFirstMove
- * GetNextMove
- * UpdateCounter
- *
- * OnError
- * OnBadInput        // a more specific error
- * OnPoolExhausted   // a more specific error
- * OnVictory
- */
- 
+}
