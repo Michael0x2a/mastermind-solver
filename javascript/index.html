@@ -159,9 +159,19 @@
     <script type="text/javascript">
         $(document).ready(function() {
             'use strict';
-            setupMastermind('#submit_setup', '#choices_input', '#holes_input', '#palette', 
-                            '#start', '#submit_feedback', '#guesses', '#pointer', 
-                            '#num_red_input', '#num_white_input', '#errors');
+            Mastermind.Display.setup({
+                form_id: '#submit_setup', 
+                choices_id: '#choices_input',
+                holes_id: '#holes_input',
+                palette_id: '#palette',
+                start_id: '#start',
+                feedback_id: '#submit_feedback',
+                guesses_id: '#guesses',
+                pointer_id: '#pointer',
+                red_id: '#num_red_input',
+                white_id: '#num_white_input',
+                error_id: '#errors'
+            });
         });
     </script>
 </body>

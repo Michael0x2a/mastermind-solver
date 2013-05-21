@@ -10,6 +10,12 @@ it'll give you a combination to guess.
 Just for kicks, I'm writing a version of the algorithm in several different programming 
 languages. Versions available:
 
-*   Python, basic console app: Complete (reference implementation)
-*   HTML5 + Javascript, webapp: Complete (but needs validation on other web browsers)
+*   Python (reference implementation):
+    *   Basic console app
+    *   Finished
+*   HTML5 + Javascript webapp: 
+    *   Demo located at: http://projects.michael0x2a.com/mastermind_solver
+    *   Complete, but undergoing refactoring to be more idiomatic.
+    
+
 
