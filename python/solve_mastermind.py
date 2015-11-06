@@ -75,7 +75,7 @@ def make_guess(pool, feedback):
 
 
 def play():
-    '''Plays a complete game of minesweeper, and collects user input.'''
+    '''Plays a complete game of mastermind, and collects user input.'''
     choices = int(raw_input("Number of numbers? "), 10)
     holes = int(raw_input("Number of spaces?  "), 10)
     print ''
