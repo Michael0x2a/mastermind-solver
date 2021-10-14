@@ -15,7 +15,7 @@ Feedback = collections.namedtuple('Feedback', ['correct', 'close'])
 
 def generate_initial_pool(choices, holes):
     '''Generates the initial set of possible answers.'''
-    return list(itertools.product(*[range(choices) for _ in xrange(holes)]))
+    return list(itertools.product(*[range(choices) for _ in range(holes)]))
 
 
 def find_correct(actual, guess):
@@ -76,25 +76,25 @@ def make_guess(pool, feedback):
 
 def play():
     '''Plays a complete game of mastermind, and collects user input.'''
-    choices = int(raw_input("Number of numbers? "), 10)
-    holes = int(raw_input("Number of spaces?  "), 10)
-    print ''
+    choices = int(input("Number of numbers? "), 10)
+    holes = int(input("Number of spaces?  "), 10)
+    print('')
 
     pool = generate_initial_pool(choices, holes)
     guess = [0 if (i < (holes / 2)) else 1 for i in range(holes)]
     while True:
-        print "Try this: {0}".format(guess)
-        correct = int(raw_input("    # Red pegs?   "))
-        close = int(raw_input("    # White pegs? "))
+        print("Try this: {0}".format(guess))
+        correct = int(input("    # Red pegs?   "))
+        close = int(input("    # White pegs? "))
 
         feedback = Feedback(correct, close)
         if feedback.correct == holes:
             break
         pool = list(filter_pool(pool, guess, feedback))
-        print "{0} possible choices left. Thinking...\n".format(len(pool))
+        print("{0} possible choices left. Thinking...\n".format(len(pool)))
 
         guess = make_guess(pool, feedback)
-    print "\nYou win!"
+    print("\nYou win!")
 
 
 if __name__ == '__main__':
